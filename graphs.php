@@ -14,6 +14,14 @@ print $SQL;
 			   $data_cats[] = $row['hour'];
 			   $data_values[] = $row['temp'];
 			}
+			$SQL = "SELECT HOUR(date) as hour, max(pressure) as pressure FROM `mydata` WHERE  `date` >= '$today' group by HOUR(date)";
+print $SQL;
+          	$maxHourlyPressureData = mysql_query($SQL);
+          	while ($row = mysql_fetch_array($maxHourlyPressureData)) {
+
+			   $data_pressureCats[] = $row['hour'];
+			   $data_pressureValues[] = $row['pressure'];
+			}
 		?>
 
 	<script type="text/javascript">
@@ -39,7 +47,7 @@ $(function () {
                 plotLines: [{
                     value: 0,
                     width: 1,
-                    color: '#808080'
+                    color: '#FF0000'
                 }]
             },
             tooltip: {
@@ -62,22 +70,6 @@ $(function () {
 		</script>
 
 		
-<?php
-
-$today = date("Y-m-d", time() - 60 * 60 * 24);
-
-PRINT $today;
-
-			$SQL = "SELECT HOUR(date) as hour, max(pressure) as pressure FROM `mydata` WHERE  `date` >= '$today' group by HOUR(date)";
-print $SQL;
-          	$maxHourlyPressureData = mysql_query($SQL);
-          	while ($row = mysql_fetch_array($maxHourlyPressureData)) {
-
-			   $data_pressureCats[] = $row['hour'];
-			   $data_pressureValues[] = $row['pressure'];
-			}
-		?>
-
 	<script type="text/javascript">
 $(function () {
 
@@ -86,7 +78,7 @@ $(function () {
 		var pressureCats = [ <?php echo join($data_pressureCats, ',') ?> ]
 		var pressureData = [ <?php echo join($data_pressureValues, ',') ?> ]
 
-        $('#tempChart').highcharts({
+        $('#pressureChart').highcharts({
             title: {
                 text: 'Daily Max Pressure',
                 x: -20 //center
