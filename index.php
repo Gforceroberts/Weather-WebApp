@@ -11,7 +11,7 @@
       <?php
 
         //Display table
-          $SQL = "SELECT DATE_FORMAT(date,'%b %d, %k:%i') as date, temp, pressure, humidity, rain FROM mydata order by date desc limit 100";
+          $SQL = "SELECT date, temp, pressure, humidity, rain FROM mydata order by date desc limit 1000";
           $result = mysql_query($SQL);
 
           ?>
