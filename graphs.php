@@ -76,9 +76,11 @@
                 },
                 series: [{
                     name: 'Hourly Max',
+					color: '#FF0000',
                     data: maxData
                 }, {
 					name: 'Hourly Min',
+					color: '#8FD8D8',
                     data: minData
 				
 				}]
@@ -116,6 +118,7 @@
                 },
                 series: [{
                     name: 'Hourly Max',
+					color: '#006400',
                     data: pressureData
                 }]
             });
