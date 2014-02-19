@@ -4,15 +4,23 @@
 
     $today = date("Y-m-d", time() - 60 * 60 * 24);
 
-    //temp data
-	$SQL = "SELECT HOUR(date) as hour, max(temp) as temp FROM `mydata` WHERE  `date` >= '$today' group by HOUR(date)";
+    //max temp data
+	$SQL = "SELECT HOUR(date) as hour, max(temp) as maxTemp FROM `mydata` WHERE  `date` >= '$today' group by HOUR(date)";
   	$maxHourlyTempData = mysql_query($SQL);
   	while ($row = mysql_fetch_array($maxHourlyTempData)) {
 
 	   $data_cats[] = $row['hour'];
-	   $data_values[] = $row['temp'];
+	   $data_maxValues[] = $row['maxTemp'];
 	}
 
+	//min temp data
+	$SQL = "SELECT HOUR(date) as hour, min(temp) as minTemp FROM `mydata` WHERE  `date` >= '$today' group by HOUR(date)";
+  	$minHourlyTempData = mysql_query($SQL);
+  	while ($row = mysql_fetch_array($minHourlyTempData)) {
+
+	   $data_minValues[] = $row['minTemp'];
+	}
+	
     //pressure data
 	$SQL = "SELECT HOUR(date) as hour, max(pressure) as pressure FROM `mydata` WHERE  `date` >= '$today' group by HOUR(date)";
   	$maxHourlyPressureData = mysql_query($SQL);
@@ -21,13 +29,23 @@
 	   $data_pressureCats[] = $row['hour'];
 	   $data_pressureValues[] = $row['pressure'];
 	}
+	
+	//rain data
+	$SQL = "SELECT HOUR(date) as hour, sum(rain) as hourlyRain FROM `mydata` WHERE  `date` >= '$today' group by HOUR(date)";
+  	$hourlyRainData = mysql_query($SQL);
+  	while ($row = mysql_fetch_array($hourlyRainData)) {
+
+	   $data_hourlyRainCats[] = $row['hour'];
+	   $data_hourlyRainValues[] = $row['hourlyRain'];
+	}
 ?>
 
 	<script type="text/javascript">
         $(function () {
 
     		var cats = [ <?php echo join($data_cats, ',') ?> ]
-    		var data = [ <?php echo join($data_values, ',') ?> ]
+    		var maxData = [ <?php echo join($data_maxValues, ',') ?> ]
+			var minData = [ <?php echo join($data_minValues, ',') ?> ]
 
             $('#tempChart').highcharts({
                 title: {
@@ -58,8 +76,12 @@
                 },
                 series: [{
                     name: 'Hourly Max',
-                    data: data
-                }]
+                    data: maxData
+                }, {
+					name: 'Hourly Min',
+                    data: minData
+				
+				}]
             });
 
             var pressureCats = [ <?php echo join($data_pressureCats, ',') ?> ]
@@ -97,7 +119,52 @@
                     data: pressureData
                 }]
             });
-        });
+        
+		
+			var rainCats = [ <?php echo join($data_hourlyRainCats, ',') ?> ]
+            var rainData = [ <?php echo join($data_hourlyRainValues, ',') ?> ]
+		
+		
+			$('#rainfallChart').highcharts({
+				chart: {
+					type: 'column'
+				},
+				title: {
+					text: 'Hourly Rainfall'
+				},
+				
+				xAxis: {
+					categories: rainCats
+				},
+				yAxis: {
+					min: 0,
+					title: {
+						text: 'Rainfall (mm)'
+					}
+				},
+				tooltip: {
+					headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
+					pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
+						'<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
+					footerFormat: '</table>',
+					shared: true,
+					useHTML: true
+				},
+				plotOptions: {
+					column: {
+						pointPadding: 0.2,
+						borderWidth: 0
+					}
+				},
+				series: [{
+					name: 'Rainfall',
+					data: rainData
+		
+			
+				}]
+			});
+				
+		});
 
 
 		</script>
@@ -108,6 +175,7 @@
 
     	<div id="tempChart" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
         <div id="pressureChart" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+		<div id="rainfallChart" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
 
 	</div><!-- /.container -->
 <?php include('footer.php'); ?>
