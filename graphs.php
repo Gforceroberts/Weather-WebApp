@@ -30,6 +30,15 @@
 	   $data_pressureValues[] = $row['pressure'];
 	}
 	
+	//humidity data
+	$SQL = "SELECT HOUR(date) as hour, max(humidity) as maxHumidity FROM `mydata` WHERE  `date` >= '$today' group by HOUR(date)";
+  	$maxHourlyHumidityData = mysql_query($SQL);
+  	while ($row = mysql_fetch_array($maxHourlyHumidityData)) {
+
+	   $data_humidityCats[] = $row['hour'];
+	   $data_humidityValues[] = $row['maxHumidity'];
+	}
+		
 	//rain data
 	$SQL = "SELECT HOUR(date) as hour, sum(rain) as hourlyRain FROM `mydata` WHERE  `date` >= '$today' group by HOUR(date)";
   	$hourlyRainData = mysql_query($SQL);
@@ -38,6 +47,8 @@
 	   $data_hourlyRainCats[] = $row['hour'];
 	   $data_hourlyRainValues[] = $row['hourlyRain'];
 	}
+	
+	
 ?>
 
 	<script type="text/javascript">
@@ -49,7 +60,7 @@
 
             $('#tempChart').highcharts({
                 title: {
-                    text: 'Daily Max Temperature',
+                    text: 'Daily Min and Max Temperature',
                     x: -20 //center
                 },
                 xAxis: {
@@ -122,8 +133,44 @@
                     data: pressureData
                 }]
             });
-        
+			
+			var humidityCats = [ <?php echo join($data_humidityCats, ',') ?> ]
+            var humidityData = [ <?php echo join($data_humidityValues, ',') ?> ]
 		
+			$('#humidityChart').highcharts({
+                title: {
+                    text: 'Daily Max Humidity',
+                    x: -20 //center
+                },
+                xAxis: {
+                    categories: humidityCats
+                },
+                yAxis: {
+                    title: {
+                        text: 'Humidity (%)'
+                    },
+                    plotLines: [{
+                        value: 0,
+                        width: 1,
+                        color: '#808080'
+                    }]
+                },
+                tooltip: {
+                    valueSuffix: '%'
+                },
+                legend: {
+                    layout: 'vertical',
+                    align: 'right',
+                    verticalAlign: 'middle',
+                    borderWidth: 0
+                },
+                series: [{
+                    name: 'Hourly Max',
+					color: '#CC3232',
+                    data: humidityData
+                }]
+            });
+					
 			var rainCats = [ <?php echo join($data_hourlyRainCats, ',') ?> ]
             var rainData = [ <?php echo join($data_hourlyRainValues, ',') ?> ]
 		
@@ -176,9 +223,10 @@
 
     <div class="container">
 
-    	<div id="tempChart" style="min-width: 310px; height: 300px; margin: 0 auto"></div>
-        <div id="pressureChart" style="min-width: 310px; height: 300px; margin: 0 auto"></div>
-		<div id="rainfallChart" style="min-width: 310px; height: 300px; margin: 0 auto"></div>
+    	<div id="tempChart" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+        <div id="pressureChart" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+		<div id="humidityChart" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+		<div id="rainfallChart" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
 
 	</div><!-- /.container -->
 <?php include('footer.php'); ?>
