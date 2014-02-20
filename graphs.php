@@ -2,7 +2,7 @@
 
 <?php
 
-    $today = date("Y-m-d", time()); // - 60 * 60 * 24);
+    $today = date("Y-m-d", time() - 60 * 60 * 24 * 2);
 
     //max temp data
 	$SQL = "SELECT HOUR(date) as hour, max(temp) as maxTemp FROM `mydata` WHERE  `date` >= '$today' group by HOUR(date)";
@@ -176,9 +176,9 @@
 
     <div class="container">
 
-    	<div id="tempChart" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
-        <div id="pressureChart" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
-		<div id="rainfallChart" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+    	<div id="tempChart" style="min-width: 310px; height: 300px; margin: 0 auto"></div>
+        <div id="pressureChart" style="min-width: 310px; height: 300px; margin: 0 auto"></div>
+		<div id="rainfallChart" style="min-width: 310px; height: 300px; margin: 0 auto"></div>
 
 	</div><!-- /.container -->
 <?php include('footer.php'); ?>
