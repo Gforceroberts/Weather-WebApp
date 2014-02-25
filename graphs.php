@@ -2,7 +2,7 @@
 
 <?php
 
-    $today = date("Y-m-d", time() - 60 * 60 * 24 * 3);
+    $today = date("Y-m-d", time() - 60 * 60 * 24 * 7);
 
     //max temp data
 	$SQL = "SELECT HOUR(date) as hour, max(temp) as maxTemp FROM `mydata` WHERE  `date` >= '$today' group by HOUR(date)";
@@ -21,14 +21,24 @@
 	   $data_minValues[] = $row['minTemp'];
 	}
 	
-    //pressure data
+    //max pressure data
 	$SQL = "SELECT HOUR(date) as hour, max(pressure) as pressure FROM `mydata` WHERE  `date` >= '$today' group by HOUR(date)";
   	$maxHourlyPressureData = mysql_query($SQL);
   	while ($row = mysql_fetch_array($maxHourlyPressureData)) {
 
 	   $data_pressureCats[] = $row['hour'];
-	   $data_pressureValues[] = $row['pressure'];
+	   $data_maxPressureValues[] = $row['pressure'];
 	}
+	
+	//max pressure data
+	$SQL = "SELECT HOUR(date) as hour, min(pressure) as minPressure FROM `mydata` WHERE  `date` >= '$today' group by HOUR(date)";
+  	$minHourlyPressureData = mysql_query($SQL);
+  	while ($row = mysql_fetch_array($minHourlyPressureData)) {
+
+	   $data_pressureCats[] = $row['hour'];
+	   $data_minPressureValues[] = $row['minPressure'];
+	}
+	
 	
 	//humidity data
 	$SQL = "SELECT HOUR(date) as hour, max(humidity) as maxHumidity FROM `mydata` WHERE  `date` >= '$today' group by HOUR(date)";
@@ -60,7 +70,7 @@
 
             $('#tempChart').highcharts({
                 title: {
-                    text: 'Daily Min and Max Temperature',
+                    text: 'Daily Temperature',
                     x: -20 //center
                 },
                 xAxis: {
@@ -98,11 +108,12 @@
             });
 
             var pressureCats = [ <?php echo join($data_pressureCats, ',') ?> ]
-            var pressureData = [ <?php echo join($data_pressureValues, ',') ?> ]
+            var maxPressureData = [ <?php echo join($data_maxPressureValues, ',') ?> ]
+			var minPressureData = [ <?php echo join($data_minPressureValues, ',') ?> ]
 
             $('#pressureChart').highcharts({
                 title: {
-                    text: 'Daily Max Pressure',
+                    text: 'Daily Pressure',
                     x: -20 //center
                 },
                 xAxis: {
@@ -130,7 +141,11 @@
                 series: [{
                     name: 'Hourly Max',
 					color: '#006400',
-                    data: pressureData
+                    data: maxPressureData
+				//}, {
+					//name: 'Hourly Min',
+					//color: '#CCFF66',
+                    //data: minPressureData
                 }]
             });
 			
@@ -139,7 +154,7 @@
 		
 			$('#humidityChart').highcharts({
                 title: {
-                    text: 'Daily Max Humidity',
+                    text: 'Daily Humidity',
                     x: -20 //center
                 },
                 xAxis: {
@@ -180,7 +195,7 @@
 					type: 'column'
 				},
 				title: {
-					text: 'Hourly Rainfall'
+					text: 'Daily Rainfall'
 				},
 				
 				xAxis: {
@@ -207,7 +222,7 @@
 					}
 				},
 				series: [{
-					name: 'Rainfall',
+					name: 'Hourly Rainfall',
 					data: rainData
 		
 			
