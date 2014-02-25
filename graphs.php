@@ -2,7 +2,7 @@
 
 <?php
 
-    $today = date("Y-m-d", time() - 60 * 60 * 24 * 2);
+    $today = date("Y-m-d", time() - 60 * 60 * 24 * 3);
 
     //max temp data
 	$SQL = "SELECT HOUR(date) as hour, max(temp) as maxTemp FROM `mydata` WHERE  `date` >= '$today' group by HOUR(date)";

@@ -19,7 +19,7 @@
 
         <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
         <script src="js/bootstrap.min.js"></script>
-        <script src="js/highcharts.js"></script>
+        <script src="http://code.highcharts.com/stock/highstock.js"></script>
 
         <!-- Just for debugging purposes. Don't actually copy this line! -->
         <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->

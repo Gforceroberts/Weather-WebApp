@@ -4,7 +4,7 @@
     <div class="container">
 
       <div class="starter-template">
-        <h1>The weather data</h1>
+        <h1>Force-cast Weather</h1>
         <p class="lead">Check here for all your weather updates in and around Force's house!!</p>
       </div>
 
