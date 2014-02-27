@@ -2,11 +2,11 @@
 
 <?php
 
-    $today = date("Y-m-d", time() - 60 * 60 * 24 * 3);
-	$sevenDaysAgo = date("Y-m-d", time() - 60 * 60 * 24 * 6);
+    $today = date("Y-m-d", time() + 60 * 60 * 24);
+	$sevenDaysAgo = date("Y-m-d", time() - 60 * 60 * 24 * 7);
 
     //weekly max temp data
-	$SQL = "SELECT DATE(date) as myDate, HOUR(date) as hour, max(temp) as maxTemp FROM `mydata` WHERE  `date` >= '2014-02-17' AND `date` <= '2014-02-19' group by DATE(date), HOUR(date)";
+	$SQL = "SELECT DATE(date) as myDate, HOUR(date) as hour, max(temp) as maxTemp FROM `mydata` WHERE  `date` >= '$sevenDaysAgo' AND `date` <= '$today' group by DATE(date), HOUR(date)";
   	$weeklyMaxTempData = mysql_query($SQL);
   	while ($row = mysql_fetch_array($weeklyMaxTempData)) {
 
@@ -15,7 +15,7 @@
 	}
 
 	//weekly min temp data
-	$SQL = "SELECT DATE(date) as myDate, HOUR(date) as hour, min(temp) as minTemp FROM `mydata` WHERE  `date` >= '2014-02-17' AND `date` <= '2014-02-19' group by DATE(date), HOUR(date)";
+	$SQL = "SELECT DATE(date) as myDate, HOUR(date) as hour, min(temp) as minTemp FROM `mydata` WHERE  `date` >= '$sevenDaysAgo' AND `date` <= '$today' group by DATE(date), HOUR(date)";
   	$weeklyMinTempData = mysql_query($SQL);
   	while ($row = mysql_fetch_array($weeklyMinTempData)) {
 
@@ -23,7 +23,7 @@
 	}
 	
 	//weekly max pressure data
-	$SQL = "SELECT DATE(date) as myDate, HOUR(date) as hour, max(pressure) as maxPressure FROM `mydata` WHERE  `date` >= '2014-02-17' AND `date` <= '2014-02-19' group by DATE(date), HOUR(date)";
+	$SQL = "SELECT DATE(date) as myDate, HOUR(date) as hour, max(pressure) as maxPressure FROM `mydata` WHERE  `date` >= '$sevenDaysAgo' AND `date` <= '$today' group by DATE(date), HOUR(date)";
   	$weeklyMaxPressureData = mysql_query($SQL);
   	while ($row = mysql_fetch_array($weeklyMaxPressureData)) {
 
@@ -32,7 +32,7 @@
 	}
 	
 	//weekly min pressure data
-	$SQL = "SELECT DATE(date) as myDate, HOUR(date) as hour, min(pressure) as minPressure FROM `mydata` WHERE  `date` >= '2014-02-17' AND `date` <= '2014-02-19' group by DATE(date), HOUR(date)";
+	$SQL = "SELECT DATE(date) as myDate, HOUR(date) as hour, min(pressure) as minPressure FROM `mydata` WHERE  `date` >= '$sevenDaysAgo' AND `date` <= '$today' group by DATE(date), HOUR(date)";
   	$weeklyMinPressureData = mysql_query($SQL);
   	while ($row = mysql_fetch_array($weeklyMinPressureData)) {
 
@@ -40,7 +40,7 @@
 	}
 	
 	//weekly max humidity data
-	$SQL = "SELECT DATE(date) as myDate, HOUR(date) as hour, max(humidity) as maxHumidity FROM `mydata` WHERE  `date` >= '2014-02-17' AND `date` <= '2014-02-19' group by DATE(date), HOUR(date)";
+	$SQL = "SELECT DATE(date) as myDate, HOUR(date) as hour, max(humidity) as maxHumidity FROM `mydata` WHERE  `date` >= '$sevenDaysAgo' AND `date` <= '$today' group by DATE(date), HOUR(date)";
   	$weeklyMaxHumidityData = mysql_query($SQL);
   	while ($row = mysql_fetch_array($weeklyMaxHumidityData)) {
 
@@ -49,7 +49,7 @@
 	}
 	
 	//rain data
-	$SQL = "SELECT DATE(date) as myDate, HOUR(date) as hour, sum(rain) as rainfall FROM `mydata` WHERE  `date` >= '2014-02-17' AND `date` <= '2014-02-19' group by DATE(date), HOUR(date)";
+	$SQL = "SELECT DATE(date) as myDate, HOUR(date) as hour, sum(rain) as rainfall FROM `mydata` WHERE  `date` >= '$sevenDaysAgo' AND `date` <= '$today' group by DATE(date), HOUR(date)";
   	$weeklyRainData = mysql_query($SQL);
   	while ($row = mysql_fetch_array($weeklyRainData)) {
 
@@ -77,24 +77,26 @@
                     x: -20 //center
                 },
                 xAxis: {
-                    categories: weeklyCats
-					//min: 4
+                    categories: weeklyCats,
+					max: 20
+					//max: 10
+				},
 					
-                },
+				
 				legend: {
 					verticalAlign: 'top',
 					y: 100,
 					align: 'right'
 				},
     
-				//scrollbar: {
-				//enabled: true
-				//},
+				scrollbar: {
+					enabled: true
+				},
 				
 				
                 yAxis: {
                     title: {
-                        text: 'Temperature (°C)'
+                        text: 'Temperature (Â°C)'
                     },
                     plotLines: [{
                         value: 0,
@@ -103,7 +105,7 @@
                     }]
                 },
                 tooltip: {
-                    valueSuffix: '°C'
+                    valueSuffix: 'Â°C'
                 },
                 legend: {
                     layout: 'vertical',
@@ -136,8 +138,8 @@
                     x: -20 //center
                 },
                 xAxis: {
-                    categories: weeklyPressureCats
-					//min: 4
+                    categories: weeklyPressureCats,
+					max: 20
 					
                 },
 				legend: {
@@ -146,9 +148,9 @@
 					align: 'right'
 				},
     
-				//scrollbar: {
-				//enabled: true
-				//},
+				scrollbar: {
+				enabled: true
+				},
 				
 				
                 yAxis: {
@@ -195,8 +197,8 @@
                     x: -20 //center
                 },
                 xAxis: {
-                    categories: weeklyHumidityCats
-					//min: 4
+                    categories: weeklyHumidityCats,
+					max: 20
 					
                 },
 				legend: {
@@ -205,9 +207,9 @@
 					align: 'right'
 				},
     
-				//scrollbar: {
-				//enabled: true
-				//},
+				scrollbar: {
+				enabled: true
+				},
 				
 				
                 yAxis: {
@@ -256,8 +258,14 @@
 				},
 				
 				xAxis: {
-					categories: weeklyRainCats
+					categories: weeklyRainCats,
+					max: 60
 				},
+				
+				scrollbar: {
+				enabled: true
+				},
+				
 				yAxis: {
 					min: 0,
 					title: {
@@ -296,10 +304,11 @@
     <div class="container">
 
     	
-		<div id="weeklyTempChart" style="height: 300px"></div>
-		<div id="weeklyPressureChart" style="height: 300px"></div>
-		<div id="weeklyHumidityChart" style="height: 300px"></div> 
-        <div id="weeklyRainfallChart" style="height: 300px"></div>
+		<!--<div id="weeklyTempChart" style="height: 300px"></div>-->
+		<div id="weeklyTempChart" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+		<div id="weeklyPressureChart" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+		<div id="weeklyHumidityChart" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+        <div id="weeklyRainfallChart" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
 
 	</div><!-- /.container -->
 <?php include('footer.php'); ?>
