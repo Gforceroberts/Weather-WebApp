@@ -10,6 +10,10 @@
 
       <?php
 
+        //$variables = new Variables();
+        //print("here: " . $variables->GetVariable("ALTITUDE"));
+        //exit;
+
         //Display table
           $SQL = "SELECT date, temp, pressure, humidity, rain FROM mydata order by date desc limit 1000";
           $result = mysql_query($SQL);
