@@ -15,7 +15,7 @@
         //exit;
 
         //Display table
-          $SQL = "SELECT date, temp, pressure, humidity, rain FROM mydata order by date desc limit 1000";
+          $SQL = "SELECT date, temp, pressure, humidity, rain, dptemp, balt, winddir, windspeed FROM mydata order by date desc limit 1000";
           $result = mysql_query($SQL);
 
           ?>
@@ -27,6 +27,10 @@
                 <th>Pressure <br />(hPa)</th>
                 <th>Humidity <br />(%)</th>
                 <th>Rain <br />(mm)</th>
+				<th>Dew Point <br />temp</th>
+				<th>Altitude <br />baro</th>
+				<th>Wind Dir</th>
+				<th>Wind Speed</th>
               </tr>
             </thead>
             <tbody>
@@ -44,7 +48,6 @@
                   print '<td>' . $db_field['pressure'] . "</td>";
                   print '<td>' . $db_field['humidity'] . "</td>";
 
-
                   if($rain > 10)
                   {
                     print '<td class="info">' . $rain . "</td>";
@@ -53,6 +56,11 @@
                   {
                     print '<td>' . $rain . "</td>";
                   }
+				  
+				  print '<td>' . $db_field['dptemp'] . "</td>";
+				  print '<td>' . $db_field['balt'] . "</td>";
+				  print '<td>' . $db_field['winddir'] . "</td>";
+				  print '<td>' . $db_field['windspeed'] . "</td>";
 
                 print '</tr>';
                 }
