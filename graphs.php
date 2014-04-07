@@ -5,7 +5,7 @@
     $today = date("Y-m-d", time());// + 60 * 60 * 24);
 
     //max temp data
-	$SQL = "SELECT HOUR(date) as hour, max(temp) as maxTemp FROM `mydata` WHERE  `date` >= '$today' group by HOUR(date)";
+	$SQL = "SELECT HOUR(date) as hour, max(temp) as maxTemp FROM `mydata` WHERE  `date` >= '2014-04-01' group by HOUR(date)";
   	$maxHourlyTempData = mysql_query($SQL);
   	while ($row = mysql_fetch_array($maxHourlyTempData)) {
 
@@ -14,7 +14,7 @@
 	}
 
 	//min temp data
-	$SQL = "SELECT HOUR(date) as hour, min(temp) as minTemp FROM `mydata` WHERE  `date` >= '$today' group by HOUR(date)";
+	$SQL = "SELECT HOUR(date) as hour, min(temp) as minTemp FROM `mydata` WHERE  `date` >= '2014-04-01' group by HOUR(date)";
   	$minHourlyTempData = mysql_query($SQL);
   	while ($row = mysql_fetch_array($minHourlyTempData)) {
 
@@ -22,7 +22,7 @@
 	}
 	
     //max pressure data
-	$SQL = "SELECT HOUR(date) as hour, max(pressure) as pressure FROM `mydata` WHERE  `date` >= '$today' group by HOUR(date)";
+	$SQL = "SELECT HOUR(date) as hour, max(pressure) as pressure FROM `mydata` WHERE  `date` >= '2014-04-01' group by HOUR(date)";
   	$maxHourlyPressureData = mysql_query($SQL);
   	while ($row = mysql_fetch_array($maxHourlyPressureData)) {
 
@@ -31,7 +31,7 @@
 	}
 	
 	//max pressure data
-	$SQL = "SELECT HOUR(date) as hour, min(pressure) as minPressure FROM `mydata` WHERE  `date` >= '$today' group by HOUR(date)";
+	$SQL = "SELECT HOUR(date) as hour, min(pressure) as minPressure FROM `mydata` WHERE  `date` >= '2014-04-01' group by HOUR(date)";
   	$minHourlyPressureData = mysql_query($SQL);
   	while ($row = mysql_fetch_array($minHourlyPressureData)) {
 
@@ -41,16 +41,18 @@
 	
 	
 	//humidity data
-	$SQL = "SELECT HOUR(date) as hour, max(humidity) as maxHumidity FROM `mydata` WHERE  `date` >= '$today' group by HOUR(date)";
-  	$maxHourlyHumidityData = mysql_query($SQL);
+	//$SQL = "SELECT HOUR(date) as hour, max(humidity) as maxHumidity FROM `mydata` WHERE  `date` >= '2014-04-01' group by HOUR(date)";
+  	$SQL = "SELECT DATE_FORMAT(date, '%H%I') as time, humidity as humidity FROM `mydata` WHERE  `date` >= '2014-04-01'";
+	//$SQL = "SELECT TIME(date) as time, humidity as humidity FROM `mydata` WHERE  `date` >= '2014-04-01'";
+	$maxHourlyHumidityData = mysql_query($SQL);
   	while ($row = mysql_fetch_array($maxHourlyHumidityData)) {
 
-	   $data_humidityCats[] = $row['hour'];
-	   $data_humidityValues[] = $row['maxHumidity'];
+	   $data_humidityCats[] = $row['time'];
+	   $data_humidityValues[] = $row['humidity'];
 	}
 		
 	//rain data
-	$SQL = "SELECT HOUR(date) as hour, sum(rain) as hourlyRain FROM `mydata` WHERE  `date` >= '$today' group by HOUR(date)";
+	$SQL = "SELECT HOUR(date) as hour, sum(rain) as hourlyRain FROM `mydata` WHERE  `date` >= '2014-04-01' group by HOUR(date)";
   	$hourlyRainData = mysql_query($SQL);
   	while ($row = mysql_fetch_array($hourlyRainData)) {
 
