@@ -3,7 +3,10 @@
 <?php
 
     $today = date("Y-m-d", time());// + 60 * 60 * 24);
-
+	$PHPDate = date("d, j M Y H:i:s T", strtotime($today) );
+	$timeSep = "9";
+	
+	
     //max temp data
 	$SQL = "SELECT HOUR(date) as hour, max(temp) as maxTemp FROM `mydata` WHERE  `date` >= '2014-04-01' group by HOUR(date)";
   	$maxHourlyTempData = mysql_query($SQL);
@@ -42,7 +45,7 @@
 	
 	//humidity data
 	//$SQL = "SELECT HOUR(date) as hour, max(humidity) as maxHumidity FROM `mydata` WHERE  `date` >= '2014-04-01' group by HOUR(date)";
-  	$SQL = "SELECT DATE_FORMAT(date, '%H%I') as time, humidity as humidity FROM `mydata` WHERE  `date` >= '2014-04-01'";
+  	$SQL = "SELECT DATE_FORMAT(date, '%H%i') as time, humidity as humidity FROM `mydata` WHERE  `date` >= '2014-04-01'";
 	//$SQL = "SELECT TIME(date) as time, humidity as humidity FROM `mydata` WHERE  `date` >= '2014-04-01'";
 	$maxHourlyHumidityData = mysql_query($SQL);
   	while ($row = mysql_fetch_array($maxHourlyHumidityData)) {
@@ -57,6 +60,7 @@
   	while ($row = mysql_fetch_array($hourlyRainData)) {
 
 	   $data_hourlyRainCats[] = $row['hour'];
+	   
 	   $data_hourlyRainValues[] = $row['hourlyRain'];
 	}
 	
@@ -65,14 +69,16 @@
 
 	<script type="text/javascript">
         $(function () {
-
-    		var cats = [ <?php echo join($data_cats, ',') ?> ]
+			
+			
+			var cats = [ <?php echo join($data_cats, ',') ?> ]
     		var maxData = [ <?php echo join($data_maxValues, ',') ?> ]
 			var minData = [ <?php echo join($data_minValues, ',') ?> ]
 
             $('#tempChart').highcharts({
                 title: {
-                    text: 'Daily Temperature',
+                    type: 'line',
+					text: 'Daily Temperature',
                     x: -20 //center
                 },
                 xAxis: {
@@ -82,15 +88,29 @@
                     title: {
                         text: 'Temperature (°C)'
                     },
+					 
                     plotLines: [{
                         value: 0,
                         width: 1,
                         color: '#FF0000'
                     }]
-                },
+					
+				},
                 tooltip: {
-                    valueSuffix: '°C'
+                    valueSuffix: '°C',
+					crosshairs: true,
+					shared: true
                 },
+				
+				plotOptions: {
+                spline: {
+                    marker: {
+                        radius: 4,
+                        lineColor: '#666666',
+                        lineWidth: 1
+							}
+						}
+				},
                 legend: {
                     layout: 'vertical',
                     align: 'right',
@@ -115,7 +135,8 @@
 
             $('#pressureChart').highcharts({
                 title: {
-                    text: 'Daily Pressure',
+                    type: 'spline',
+					text: 'Daily Pressure',
                     x: -20 //center
                 },
                 xAxis: {
@@ -230,6 +251,17 @@
 			
 				}]
 			});
+			
+			function secondsToHms(d) {
+			d = Number(d);
+			var h = Math.floor(d / 3600);
+			var m = Math.floor(d % 3600 / 60);
+			var s = Math.floor(d % 3600 % 60);
+			if (h<9){h= "0"+h;}
+			if (m<9){m= "0"+m;}
+			if (s<9){s= "0"+s;}
+			return (h+":"+m+":"+ s);
+				}
 				
 		});
 
