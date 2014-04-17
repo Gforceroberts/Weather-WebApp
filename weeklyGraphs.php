@@ -5,15 +5,33 @@
     $today = date("Y-m-d", time() + 60 * 60 * 24);
 	$sevenDaysAgo = date("Y-m-d", time() - 60 * 60 * 24 * 7);
 
-    //weekly max temp data
-	$SQL = "SELECT DATE(date) as myDate, HOUR(date) as hour, max(temp) as maxTemp FROM `mydata` WHERE  `date` >= '$sevenDaysAgo' AND `date` <= '$today' group by DATE(date), HOUR(date)";
-  	$weeklyMaxTempData = mysql_query($SQL);
-  	while ($row = mysql_fetch_array($weeklyMaxTempData)) {
-
-	   $data_weeklyTempCats[] = $row['hour'];
-	   $data_weeklyMaxValues[] = $row['maxTemp'];
+    //Weekly Temp data
+	$SQL = "SELECT DATE_FORMAT(date, '%Y-%m-%d,%H:%i:%s') as tempdate, temp FROM `mydata` WHERE  `date` >= '$sevenDaysAgo' AND `date` <= '$today' group by DATE(date), HOUR(date)";
+	
+	$weeklyTempData = mysql_query($SQL);
+  	while ($item = mysql_fetch_array($weeklyTempData)) {
+		
+		$temp_name = $item['temp'];
+	    $temp_time = date(strtotime($item['tempdate'])) * 1000;
+	    $tempArr[] = ([($temp_time), $temp_name]);
+	    $tempData = json_encode($tempArr, JSON_NUMERIC_CHECK);
+	   
 	}
-
+	
+	//Weekly Dew Point Data
+	$SQL = "SELECT DATE_FORMAT(date, '%Y-%m-%d,%H:%i:%s') as dptempdate, dptemp FROM `mydata` WHERE  `date` >= '$sevenDaysAgo' AND `date` <= '$today' group by DATE(date), HOUR(date)";
+  	$weeklyDpTempData = mysql_query($SQL);
+  	while ($item = mysql_fetch_array($weeklyDpTempData)) {
+		
+		$name = $item['dptemp'];
+	    $time = date(strtotime($item['dptempdate'])) * 1000;
+	    $dpTempArr[] = ([($time), $name]);
+	    $dewPointData = json_encode($dpTempArr, JSON_NUMERIC_CHECK);
+	   
+	}
+	
+	
+	
 	//weekly min temp data
 	$SQL = "SELECT DATE(date) as myDate, HOUR(date) as hour, min(temp) as minTemp FROM `mydata` WHERE  `date` >= '$sevenDaysAgo' AND `date` <= '$today' group by DATE(date), HOUR(date)";
   	$weeklyMinTempData = mysql_query($SQL);
@@ -22,13 +40,16 @@
 	   $data_weeklyMinValues[] = $row['minTemp'];
 	}
 	
-	//weekly max pressure data
-	$SQL = "SELECT DATE(date) as myDate, HOUR(date) as hour, max(pressure) as maxPressure FROM `mydata` WHERE  `date` >= '$sevenDaysAgo' AND `date` <= '$today' group by DATE(date), HOUR(date)";
-  	$weeklyMaxPressureData = mysql_query($SQL);
-  	while ($row = mysql_fetch_array($weeklyMaxPressureData)) {
-
-	   $data_weeklyPressureCats[] = $row['hour'];
-	   $data_weeklyMaxPressureValues[] = $row['maxPressure'];
+	//Weekly Pressure Data
+	$SQL = "SELECT DATE_FORMAT(date, '%Y-%m-%d,%H:%i:%s') as pressuredate, pressure FROM `mydata` WHERE  `date` >= '$sevenDaysAgo' AND `date` <= '$today' group by DATE(date), HOUR(date)";
+  	$weeklyPressureData = mysql_query($SQL);
+  	while ($item = mysql_fetch_array($weeklyPressureData)) {
+	   
+	   $name = $item['pressure'];
+	   $time = date(strtotime($item['pressuredate'])) * 1000;
+	   $pressureArr[] = ([($time), $name]);
+	   $pressureData = json_encode($pressureArr, JSON_NUMERIC_CHECK);
+	
 	}
 	
 	//weekly min pressure data
@@ -39,22 +60,32 @@
 	   $data_weeklyMinPressureValues[] = $row['minPressure'];
 	}
 	
-	//weekly max humidity data
-	$SQL = "SELECT DATE(date) as myDate, HOUR(date) as hour, max(humidity) as maxHumidity FROM `mydata` WHERE  `date` >= '$sevenDaysAgo' AND `date` <= '$today' group by DATE(date), HOUR(date)";
-  	$weeklyMaxHumidityData = mysql_query($SQL);
-  	while ($row = mysql_fetch_array($weeklyMaxHumidityData)) {
-
-	   $data_weeklyHumidityCats[] = $row['hour'];
-	   $data_weeklyMaxHumidityValues[] = $row['maxHumidity'];
+	//Daily Humidity Data
+	
+	$SQL = "SELECT DATE_FORMAT(date, '%Y-%m-%d,%H:%i:%s') as humiditydate, humidity FROM `mydata` WHERE  `date` >= '$sevenDaysAgo' AND `date` <= '$today' group by DATE(date), HOUR(date)" ;
+	$weeklyHumidityData = mysql_query($SQL);
+  	while ($item = mysql_fetch_array($weeklyHumidityData)) {
+	   
+	   $name = $item['humidity'];
+	   $time = date(strtotime($item['humiditydate'])) * 1000;
+	   $humidityArr[] = ([($time), $name]);
+	   $humidityData = json_encode($humidityArr, JSON_NUMERIC_CHECK);
+	   //echo(json_encode($humidityData, JSON_NUMERIC_CHECK)); 
+	  
 	}
 	
 	//rain data
-	$SQL = "SELECT DATE(date) as myDate, HOUR(date) as hour, sum(rain) as rainfall FROM `mydata` WHERE  `date` >= '$sevenDaysAgo' AND `date` <= '$today' group by DATE(date), HOUR(date)";
-  	$weeklyRainData = mysql_query($SQL);
-  	while ($row = mysql_fetch_array($weeklyRainData)) {
-
-	   $data_weeklyRainCats[] = $row['hour'];
-	   $data_weeklyRainValues[] = $row['rainfall'];
+	//$SQL = "SELECT DATE(date) as myDate, HOUR(date) as hour, sum(rain) as rainfall FROM `mydata` WHERE  `date` >= '$sevenDaysAgo' AND `date` <= '$today' group by DATE(date), HOUR(date)";
+	$SQL = "SELECT DATE_FORMAT(date, '%Y-%m-%d,%H:%i:%s')as rainDate, sum(rain) as dailyRain FROM `mydata` WHERE  `date` >= '$sevenDaysAgo' AND `date` <= '$today' group by DAY(date)";  
+	$dailyRainData = mysql_query($SQL);
+  	while ($item = mysql_fetch_array($dailyRainData)) {
+	   
+	   $name = $item['dailyRain'];
+	   $time = date(strtotime($item['rainDate'])) * 1000;
+	   $rainArr[] = ([($time), $name]);
+	   $rainData = json_encode($rainArr, JSON_NUMERIC_CHECK);
+	   //echo(json_encode($rainData, JSON_NUMERIC_CHECK));
+	  
 	}
 	
 	
@@ -65,107 +96,137 @@
         
 		$(function () {
 
-    		var weeklyCats = [ <?php echo join($data_weeklyTempCats, ',') ?> ]
-    		var weeklyMaxTempData = [ <?php echo join($data_weeklyMaxValues, ',') ?> ]
-			var weeklyMinTempData = [ <?php echo join($data_weeklyMinValues, ',') ?> ]
-			
+    		
+			var weeklyTempSeries = <?php echo($tempData) ?>;
+			var weeklyDewPointSeries = <?php echo($dewPointData) ?>
 			
 			$('#weeklyTempChart').highcharts({
                 
-				title: {
-                    text: 'Weekly Temperature',
-                    x: -20 //center
-                },
-                xAxis: {
-                    categories: weeklyCats,
-					max: 20
-					//max: 10
-				},
-					
-				
-				legend: {
-					verticalAlign: 'top',
-					y: 100,
-					align: 'right'
-				},
-    
-				scrollbar: {
-					enabled: true
-				},
-				
-				
-                yAxis: {
-                    title: {
-                        text: 'Temperature (°C)'
-                    },
-                    plotLines: [{
-                        value: 0,
-                        width: 1,
-                        color: '#FF0000'
-                    }]
-                },
-                tooltip: {
-                    valueSuffix: '°C'
-                },
-                legend: {
-                    layout: 'vertical',
-                    align: 'right',
-                    verticalAlign: 'middle',
-                    borderWidth: 0
-                },
-                series: [{
-                    name: 'Hourly Max',
-					color: '#FF0000',
-                    data: weeklyMaxTempData
-                }, {	
-				    name: 'Hourly Min',
-					color: '#8FD8D8',
-                    data: weeklyMinTempData
-				
+				chart: {
+			      renderTo: 'container',
+			      defaultSeriesType: 'spline',
+				  zoomType: 'x'
+			   },
+			   title: {
+			      text: 'Weekly Temperature/Dewpoint'
+			   },
+			   subtitle: {
+			      text: 'Click and drag in plot area to zoom in'
+			   },
+			   xAxis: {
+			      type: 'datetime',
+				minPadding: 0.02,
+				maxPadding: 0.02,
+			   },
+			   yAxis: {
+			      title: {
+			         text: 'Temperature (°C)'
+			      },
+				  labels: { 
+					 formatter: function() { return Highcharts.numberFormat(this.value,0) +'°' } 
+				  }
+			   },
+			   tooltip: {
+                  crosshairs: true,
+			      formatter: function() {
+                            var s = '<b>'+ Highcharts.dateFormat('%I:%M %p', this.x) +'</b><br />';
+                            $.each(this.points, function(i, point) {
+                                s += '<br/>' + point.series.name + ': ' + point.y +'°C';
+                            });
+			                return s;
+			      },
+                  shared: true
+			   },
+				   colors: [ '#AA4643', '#4572A7', '#89A54E', '#80699B', '#3D96AE', '#DB843D', '#92A8CD', '#A47D7C', '#B5CA92' ],
+
+			   plotOptions: {
+			      spline: {
+			         lineWidth: 4,
+			         marker: {
+			            enabled: false,
+			         states: {
+			            hover: {
+			                  enabled: true,
+			                  symbol: 'circle',
+			                  radius: 3,
+			                  lineWidth: 2
+			            }
+			         }
+			         },
+			         pointInterval: 300000, // one hour
+			         
+			         
+			      }
+			   },
+			   series: [{
+			      name: 'Temp',
+			      data:	weeklyTempSeries	
+			   },{
+				  name: 'Dew Point',
+				  data:	weeklyDewPointSeries
 				}]
-				
 				
             });
 
-			var weeklyPressureCats = [ <?php echo join($data_weeklyPressureCats, ',') ?> ]
-    		var weeklyMaxPressureData = [ <?php echo join($data_weeklyMaxPressureValues, ',') ?> ]
-			var weeklyMinPressureData = [ <?php echo join($data_weeklyMinPressureValues, ',') ?> ]
+			var pressureSeries = <?php echo($pressureData) ?>
 						
 			$('#weeklyPressureChart').highcharts({
                 
+				chart: {
+			      renderTo: 'container',
+			      defaultSeriesType: 'line',
+				  zoomType: 'x'
+			   },
+			   
 				title: {
-                    text: 'Weekly Pressure',
+                    text: 'Weekly Barometer',
                     x: -20 //center
                 },
-                xAxis: {
-                    categories: weeklyPressureCats,
-					max: 20
-					
+                subtitle: {
+			      text: 'Click and drag in plot area to zoom in'
+			    },
+				xAxis: {
+                   	type: 'datetime',
+					minPadding: 0.02,
+					maxPadding: 0.02,
                 },
-				legend: {
-					verticalAlign: 'top',
-					y: 100,
-					align: 'right'
-				},
-    
-				scrollbar: {
-				enabled: true
-				},
-				
-				
                 yAxis: {
                     title: {
                         text: 'Pressure (hPa)'
                     },
-                    plotLines: [{
-                        value: 0,
-                        width: 1,
-                        color: '#FF0000'
-                    }]
+                    minorGridLineWidth: 0, 
+					gridLineWidth: 1,
+					alternateGridColor: null,
+					labels: { formatter: function() {
+								return Highcharts.numberFormat(this.value,0) +' hPa';
+				  }
+				  },
                 },
                 tooltip: {
-                    valueSuffix: 'hPa'
+                    crosshairs: true,
+					formatter: function() {
+									return '<b>'+ Highcharts.dateFormat('%I:%M %p', this.x) +'</b><br/> '+ Highcharts.numberFormat(this.y,1) +' hPa';
+			      }
                 },
+				
+				plotOptions: {
+			      line: {
+			         lineWidth: 4,
+			         marker: {
+			            enabled: false,
+			         states: {
+			            hover: {
+			                  enabled: true,
+			                  symbol: 'circle',
+			                  radius: 3,
+			                  lineWidth: 1
+			            }
+			         }
+			         },
+			         pointInterval: 300000, // one hour
+			      }
+			   },
+				
                 legend: {
                     layout: 'vertical',
                     align: 'right',
@@ -173,58 +234,77 @@
                     borderWidth: 0
                 },
                 series: [{
-                    name: 'Hourly Max',
+                    name: 'Barometer',
 					color: '#006400',
-                    data: weeklyMaxPressureData
-				//}, {	
-				    //name: 'Hourly Min',
-					//color: '#00CCCC',
-                    //data: weeklyMinPressureData	
-				
-				}]
+					data: pressureSeries
+                }]
 				
 				
             });
 			
-			var weeklyHumidityCats = [ <?php echo join($data_weeklyHumidityCats, ',') ?> ]
-    		var weeklyMaxHumidityData = [ <?php echo join($data_weeklyMaxHumidityValues, ',') ?> ]
+			var humiditySeries = <?php echo($humidityData) ?>
 			
 						
 			$('#weeklyHumidityChart').highcharts({
                 
+				chart: {
+			      renderTo: 'container',
+			      defaultSeriesType: 'line',
+				  zoomType: 'x'
+			   },
+			   
 				title: {
                     text: 'Weekly Humidity',
                     x: -20 //center
                 },
-                xAxis: {
-                    categories: weeklyHumidityCats,
-					max: 20
-					
+                subtitle: {
+			      text: 'Click and drag in plot area to zoom in'
+			    },
+				xAxis: {
+                   	type: 'datetime',
+					minPadding: 0.02,
+					maxPadding: 0.02,
                 },
-				legend: {
-					verticalAlign: 'top',
-					y: 100,
-					align: 'right'
-				},
-    
-				scrollbar: {
-				enabled: true
-				},
-				
-				
                 yAxis: {
                     title: {
                         text: 'Humidity (%)'
                     },
-                    plotLines: [{
-                        value: 0,
-                        width: 1,
-                        color: '#FF0000'
-                    }]
+                    max: 100,
+					min: 0,
+					minorGridLineWidth: 0, 
+					gridLineWidth: 1,
+					alternateGridColor: null,
+					labels: { 
+					formatter: function() {
+								return Highcharts.numberFormat(this.value,0) +' %';
+				  }
+				  },
                 },
                 tooltip: {
-                    valueSuffix: '%'
+                    crosshairs: true,
+					formatter: function() {
+									return '<b>'+ Highcharts.dateFormat('%I:%M %p', this.x) +'</b><br/> '+ Highcharts.numberFormat(this.y,1) +' %';
+			      }
                 },
+				
+				plotOptions: {
+			      line: {
+			         lineWidth: 4,
+			         marker: {
+			            enabled: false,
+			         states: {
+			            hover: {
+			                  enabled: true,
+			                  symbol: 'circle',
+			                  radius: 3,
+			                  lineWidth: 1
+			            }
+			         }
+			         },
+			         pointInterval: 300000, // one hour
+			      }
+			   },
+				
                 legend: {
                     layout: 'vertical',
                     align: 'right',
@@ -232,66 +312,88 @@
                     borderWidth: 0
                 },
                 series: [{
-                    name: 'Hourly Max',
+                    name: 'Humidity',
 					color: '#CC3232',
-                    data: weeklyMaxHumidityData
-				//}, {	
-				    //name: 'Hourly Min',
-					//color: '#CCFF66',
-                   // data: weeklyMinHumidityData	
-				
-				}]
+					data: humiditySeries
+                }]
 				
 				
             });
 			
-			var weeklyRainCats = [ <?php echo join($data_weeklyRainCats, ',') ?> ]
-            var weeklyRainData = [ <?php echo join($data_weeklyRainValues, ',') ?> ]
-		
+			var rainSeries = <?php echo($rainData) ?>;	
 		
 			$('#weeklyRainfallChart').highcharts({
 				chart: {
-					type: 'column'
+			      renderTo: 'container',
+			      defaultSeriesType: 'column',
+			      margin: [ 50, 50, 100, 80]
+			   },
+			   title: {
+			      text: 'Weekly Rainfall'
+			   },
+			   //subtitle: {
+			     // text: 'Westford Weather (Westford, VT)'
+			   //},
+			    xAxis: {
+				labels: {
+					align: 'center',
+					style: {
+						font: 'normal 9.2px Verdana, sans-serif'
+					},
+						formatter: function() {
+							return Highcharts.dateFormat('%d. %b',this.value);
+						}
 				},
-				title: {
-					text: 'Weekly Rainfall'
+					type: 'datetime',
+					tickInterval: 24 *300000,//24 * 3600 * 1000,
+					minPadding: 0.02,
+					maxPadding: 0.02,
 				},
-				
-				xAxis: {
-					categories: weeklyRainCats,
-					max: 60
-				},
-				
-				scrollbar: {
-				enabled: true
-				},
-				
-				yAxis: {
-					min: 0,
-					title: {
-						text: 'Rainfall (mm)'
+
+			   yAxis: {
+			      min: 0,
+				  labels: { formatter: function() {
+					return Highcharts.numberFormat(this.value,1) +' mm';
 					}
-				},
-				tooltip: {
-					headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
-					pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-						'<td style="padding:0"><b>{point.y:.1f} mm</b></td></tr>',
-					footerFormat: '</table>',
-					shared: true,
-					useHTML: true
-				},
-				plotOptions: {
+				  },
+			      title: {
+			         text: 'Rainfall (mm)'
+			      }
+			   },
+			   legend: {
+			      enabled: false
+			   },
+			   tooltip: {
+			      crosshairs: true,
+			      formatter: function() {
+			         return '<b>'+ Highcharts.dateFormat('%d. %b',this.x) +'</b><br/>'+
+			             'Rainfall: '+ Highcharts.numberFormat(this.y, 2) +
+			             ' mm';
+			      }
+			   },
+			   plotOptions: {
 					column: {
-						pointPadding: 0.2,
-						borderWidth: 0
+						pointWidth:16
 					}
 				},
-				series: [{
-					name: 'Hourly Rainfall',
-					data: weeklyRainData
-		
-			
-				}]
+			         series: [{
+			         name: 'Rainfall',
+			         data: rainSeries,
+			         dataLabels: {
+			         enabled: true,
+			         rotation: -90,
+			         color: '#FFFFFF',
+			         align: 'center',
+			         x: 7,
+			         y: 14,
+			         formatter: function() {
+			            return Highcharts.numberFormat(this.y, 2);
+			         },
+			         style: {
+			            font: 'normal 11px Verdana, sans-serif'
+			         }
+			      }         
+			   }]
 			});
 					
 		});

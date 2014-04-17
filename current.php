@@ -32,6 +32,53 @@
 	   
 	}
 	
+	//latest wind directio data
+	$SQL = "select date, winddir from mydata order by id desc limit 1";
+  	$currentWindDir = mysql_query($SQL);
+  	while ($row = mysql_fetch_array($currentWindDir)) {
+
+	   switch ($row['winddir']) {
+			case ("N"):
+				$winddir = 360;
+			break;
+			case ("NW"):
+				$winddir = 315;
+			break;
+			case ("W"):
+				$winddir = 270;
+			break;
+			case ("SW"):
+				$winddir = 225;
+			break;
+			case ("S"):
+				$winddir = 180;
+			break;
+			case ("SE"):
+				$winddir = 135;
+			break;
+			case ("E"):
+				$winddir = 90;
+			break;
+			case ("NE"):
+				$winddir = 45;
+			break;
+			default:
+			$winddir = 0;
+			break;
+		}		
+	   $data_winddir = [($winddir)];
+	   //echo(json_encode($data_winddir, JSON_NUMERIC_CHECK));
+	}
+	//latest pressure data
+	$SQL = "select date, windspeed from mydata order by id desc limit 1";
+  	$currentWindSpeed = mysql_query($SQL);
+  	while ($row = mysql_fetch_array($currentWindSpeed)) {
+
+	   $data_windspeed[] = $row['windspeed'];
+	   //echo(json_encode($data_windspeed, JSON_NUMERIC_CHECK));
+	}
+	
+	
 	//today's rainfall
 	$SQL = "select date as day, sum(rain) as dailyrain from mydata WHERE  `date` >= '$yesterday' AND `date` <= '$today' group by day(date)";
   	$dailyRainfall = mysql_query($SQL);
@@ -265,7 +312,180 @@
 	    }]
 	
 	},
-	// Add some life
+	
+	function(chart) {
+	    	
+	});
+	
+			var winddirection = [ <?php echo join($data_winddir, ',') ?> ]	
+							
+			$('#windDirGuage').highcharts({
+	
+			chart: {
+	        type: 'gauge',
+	        alignTicks: false,
+	        plotBackgroundColor: null,
+	        plotBackgroundImage: null,
+	        plotBorderWidth: 0,
+	        plotShadow: false
+	    },
+	
+	    title: {
+	        text: 'Current Wind Direction'
+	    },
+	    
+	    pane: {
+	        startAngle: 0,
+	        endAngle: 360
+	    },	        
+	
+	    yAxis: [{
+	        
+	        min: 0,
+	        max: 360,
+	        tickPosition: 'outside',
+	        lineColor: '#933',
+	        lineWidth: 2,
+	        minorTickPosition: 'outside',
+	        tickColor: '#999',
+	        minorTickColor: '#933',
+	        tickLength: 10,
+	        minorTickLength: 5,
+			tickInterval:45,
+			//tickPositions: [0,45,90,135,180,225,270,315],
+	        //labels: {
+	            //distance: 20,
+	            //rotation: 'auto'
+	        //},
+			labels: {
+                distance: 15,
+				rotation: 'auto',
+                formatter:function(){
+                    if(this.value == 360) { return 'N'; }
+                    else if(this.value == 45) { return 'NE'; }
+                    else if(this.value == 90) { return 'E'; }
+                    else if(this.value == 135) { return 'SE'; }
+                    else if(this.value == 180) { return 'S'; }
+                    else if(this.value == 225) { return 'SW'; }
+                    else if(this.value == 270) { return 'W'; }
+                    else if(this.value == 315) { return 'NW'; }
+                }
+            },
+	        offset: -20,
+	        endOnTick: false
+	    }],
+	
+	    series: [{
+	        name: 'Wind Direction',
+	        data: winddirection,
+	        dataLabels: {
+	            formatter: function () {
+	                var windDirLabel = winddirection;
+	                if(windDirLabel == 360) { return 'N'; }
+                    else if(windDirLabel == 45) { return 'NE'; }
+                    else if(windDirLabel == 90) { return 'E'; }
+                    else if(windDirLabel == 135) { return 'SE'; }
+                    else if(windDirLabel == 180) { return 'S'; }
+                    else if(windDirLabel == 225) { return 'SW'; }
+                    else if(windDirLabel == 270) { return 'W'; }
+                    else if(windDirLabel == 315) { return 'NW'; }
+					return '<span style="color:#339">'+ windDirLabel + '</span>'; 
+	            },
+	            backgroundColor: {
+	                linearGradient: {
+	                    x1: 0,
+	                    y1: 0,
+	                    x2: 0,
+	                    y2: 1
+	                },
+	                stops: [
+	                    [0, '#DDD'],
+	                    [1, '#FFF']
+	                ]
+	            }
+	        },
+	        tooltip: {
+	            valueSuffix: ' %'
+	        }
+	    }]
+	
+	},
+	
+	function(chart) {
+	    	
+	});
+	
+			var wind = [ <?php echo join($data_windspeed, ',') ?> ]	
+							
+			$('#windSpeedGuage').highcharts({
+	
+			chart: {
+	        type: 'gauge',
+	        alignTicks: false,
+	        plotBackgroundColor: null,
+	        plotBackgroundImage: null,
+	        plotBorderWidth: 0,
+	        plotShadow: false
+	    },
+	
+	    title: {
+	        text: 'Current Wind Speed'
+	    },
+	    
+	    pane: {
+	        startAngle: -150,
+	        endAngle: 150
+	    },	        
+	
+	    yAxis: [{
+	        
+	        min: 0,
+	        max: 50,
+	        tickPosition: 'outside',
+	        lineColor: '#933',
+	        lineWidth: 2,
+	        minorTickPosition: 'outside',
+	        tickColor: '#933',
+	        minorTickColor: '#933',
+	        tickLength: 5,
+	        minorTickLength: 5,
+	        labels: {
+	            distance: 12,
+	            rotation: 'auto'
+	        },
+	        offset: -20,
+	        endOnTick: false
+	    }],
+	
+	    series: [{
+	        name: 'Wind Speed',
+	        data: wind,
+	        dataLabels: {
+	            formatter: function () {
+	                var windSpeedLabel = wind;
+	                return '<span style="color:#339">'+ windSpeedLabel + ' km/h</span>'; 
+	            },
+	            backgroundColor: {
+	                linearGradient: {
+	                    x1: 0,
+	                    y1: 0,
+	                    x2: 0,
+	                    y2: 1
+	                },
+	                stops: [
+	                    [0, '#DDD'],
+	                    [1, '#FFF']
+	                ]
+	            }
+	        },
+	        tooltip: {
+	            valueSuffix: ' km/h'
+	        }
+	    }]
+	
+	},
+	
+	
 	function(chart) {
 	    	
 	});
@@ -306,7 +526,7 @@
 					}
 				},
 				series: [{
-					name: 'Hourly Rainfall',
+					name: 'Today\'s Rainfall',
 					data: rainData
 		
 			
@@ -327,7 +547,9 @@
     	<div id="tempGuage" style="min-width: 310px; max-width: 400px; height: 300px; margin: 0 auto; float: left"></div>
 		<div id="pressureGuage" style="min-width: 310px; max-width: 400px; height: 300px; margin: 0 auto; float: left"></div>
         <div id="humidityGuage" style="min-width: 310px; max-width: 400px; height: 300px; margin: 0 auto; float: left"></div>
+		<div id="windDirGuage" style="min-width: 310px; max-width: 400px; height: 300px; margin: 0 auto; float: left"></div>
+		<div id="windSpeedGuage" style="min-width: 310px; max-width: 400px; height: 300px; margin: 0 auto; float: left"></div>
 		<div id="rainfall" style="min-width: 310px; max-width: 400px; height: 400px; margin: 0 auto; float: left"></div>
-		
+				
 	</div><!-- /.container -->
 <?php include('footer.php'); ?>
