@@ -15,6 +15,7 @@
 	    $temp_time = date(strtotime($item['tempdate'])) * 1000;
 	    $tempArr[] = ([($temp_time), $temp_name]);
 	    $tempData = json_encode($tempArr, JSON_NUMERIC_CHECK);
+		//echo(json_encode($tempData, JSON_NUMERIC_CHECK));
 	   
 	}
 
@@ -155,8 +156,8 @@
 			   },
 			   xAxis: {
 			      type: 'datetime',
-				minPadding: 0.02,
-				maxPadding: 0.02,
+				//minPadding: 0.02,
+				//maxPadding: 0.02,
 			   },
 			   yAxis: {
 			      title: {
