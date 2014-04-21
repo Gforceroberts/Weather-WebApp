@@ -4,7 +4,7 @@
 
     
 	
-	$today = date("Y-m-d", time() + 60 * 60 * 2); //add two hours for time zone
+	$today = date("Y-m-d", time()); //add two hours for time zone
 	
 	//Daily Temp Data
 	$SQL = "SELECT DATE_FORMAT(date, '%Y-%m-%d,%H:%i:%s') as tempdate, temp FROM `mydata` WHERE  date >= '$today'";
@@ -137,6 +137,12 @@
 	   
 	   
 	   $(function () {
+	   
+			Highcharts.setOptions({
+				global: {
+					useUTC: false
+						}
+			});
 				
 			var tempSeries = <?php echo($tempData) ?>;
 			var dewPointSeries = <?php echo($dewPointData) ?>
