@@ -140,7 +140,8 @@
 	   
 			Highcharts.setOptions({
 				global: {
-					useUTC: false
+					//useUTC: false
+					timezoneOffset: 2
 						}
 			});
 				
@@ -247,12 +248,24 @@
 				  }
 				  },
                 },
-                tooltip: {
-                    crosshairs: true,
-					formatter: function() {
-									return '<b>'+ Highcharts.dateFormat('%I:%M %p', this.x) +'</b><br/> '+ Highcharts.numberFormat(this.y,2) +' hPa';
-			      }
-                },
+                //tooltip: {
+                    //crosshairs: true,
+					//formatter: function() {
+					//				return '<b>'+ Highcharts.dateFormat('%I:%M %p', this.x) +'</b><br/> '+ Highcharts.numberFormat(this.y,2) +' hPa';
+			      //}
+                //},
+				
+				tooltip: {
+                  crosshairs: true,
+			      formatter: function() {
+                            var s = '<b>'+ Highcharts.dateFormat('%I:%M %p', this.x) +'</b><br />';
+                            $.each(this.points, function(i, point) {
+                                s += '<br/>' + point.series.name + ': ' + point.y +'hPa';
+                            });
+			                return s;
+			      },
+                  shared: true
+			   },
 				
 				plotOptions: {
 			      line: {
@@ -323,12 +336,24 @@
 				  }
 				  },
                 },
-                tooltip: {
-                    crosshairs: true,
-					formatter: function() {
-									return '<b>'+ Highcharts.dateFormat('%I:%M %p', this.x) +'</b><br/> '+ Highcharts.numberFormat(this.y,2) +' %';
-			      }
-                },
+                //tooltip: {
+                    //crosshairs: true,
+					//formatter: function() {
+					//				return '<b>'+ Highcharts.dateFormat('%I:%M %p', this.x) +'</b><br/> '+ Highcharts.numberFormat(this.y,2) +' %';
+			      //}
+               // },
+			   
+			   tooltip: {
+                  crosshairs: true,
+			      formatter: function() {
+                            var s = '<b>'+ Highcharts.dateFormat('%I:%M %p', this.x) +'</b><br />';
+                            $.each(this.points, function(i, point) {
+                                s += '<br/>' + point.series.name + ': ' + point.y +'%';
+                            });
+			                return s;
+			      },
+                  shared: true
+			   },
 				
 				plotOptions: {
 			      line: {

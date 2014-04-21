@@ -60,7 +60,7 @@
 	   $data_weeklyMinPressureValues[] = $row['minPressure'];
 	}
 	
-	//Daily Humidity Data
+	//Weekly Humidity Data
 	
 	$SQL = "SELECT DATE_FORMAT(date, '%Y-%m-%d,%H:%i:%s') as humiditydate, humidity FROM `mydata` WHERE  `date` >= '$sevenDaysAgo' AND `date` <= '$today' group by DATE(date), HOUR(date)" ;
 	$weeklyHumidityData = mysql_query($SQL);
@@ -74,7 +74,21 @@
 	  
 	}
 	
-	//rain data
+	//Wekly Wind Speed Data
+	
+	$SQL = "SELECT DATE_FORMAT(date, '%Y-%m-%d,%H:%i:%s') as windspeeddate, windspeed FROM `mydata` WHERE  `date` >= '$sevenDaysAgo' AND `date` <= '$today' group by DATE(date), HOUR(date)" ;
+	$weeklyWindSpeedData = mysql_query($SQL);
+  	while ($item = mysql_fetch_array($weeklyWindSpeedData)) {
+	   
+	   $name = $item['windspeed'];
+	   $time = date(strtotime($item['windspeeddate'])) * 1000;
+	   $windSpeedArr[] = ([($time), $name]);
+	   $windSpeedData = json_encode($windSpeedArr, JSON_NUMERIC_CHECK);
+	   //echo(json_encode($humidityData, JSON_NUMERIC_CHECK)); 
+	  
+	}
+	
+	//Weekly Rain data
 	//$SQL = "SELECT DATE(date) as myDate, HOUR(date) as hour, sum(rain) as rainfall FROM `mydata` WHERE  `date` >= '$sevenDaysAgo' AND `date` <= '$today' group by DATE(date), HOUR(date)";
 	$SQL = "SELECT DATE_FORMAT(date, '%Y-%m-%d,%H:%i:%s')as rainDate, sum(rain) as dailyRain FROM `mydata` WHERE  `date` >= '$sevenDaysAgo' AND `date` <= '$today' group by DAY(date)";  
 	$dailyRainData = mysql_query($SQL);
@@ -98,7 +112,8 @@
 		
 			Highcharts.setOptions({
 					global: {
-						useUTC: false
+						//useUTC: false
+						timezoneOffset: 2
 							}
 			});
     		
@@ -134,7 +149,7 @@
 			   tooltip: {
                   crosshairs: true,
 			      formatter: function() {
-                            var s = '<b>'+ Highcharts.dateFormat('%I:%M %p', this.x) +'</b><br />';
+                            var s = '<b>'+ Highcharts.dateFormat('%d %b %I:%M %p', this.x) +'</b><br />';
                             $.each(this.points, function(i, point) {
                                 s += '<br/>' + point.series.name + ': ' + point.y +'°C';
                             });
@@ -207,12 +222,18 @@
 				  }
 				  },
                 },
-                tooltip: {
-                    crosshairs: true,
-					formatter: function() {
-									return '<b>'+ Highcharts.dateFormat('%I:%M %p', this.x) +'</b><br/> '+ Highcharts.numberFormat(this.y,1) +' hPa';
-			      }
-                },
+               			   
+			   tooltip: {
+                  crosshairs: true,
+			      formatter: function() {
+                            var s = '<b>'+ Highcharts.dateFormat('%I:%M %p', this.x) +'</b><br />';
+                            $.each(this.points, function(i, point) {
+                                s += '<br/>' + point.series.name + ': ' + point.y +'hPa';
+                            });
+			                return s;
+			      },
+                  shared: true
+			   },
 				
 				plotOptions: {
 			      line: {
@@ -286,11 +307,16 @@
 				  },
                 },
                 tooltip: {
-                    crosshairs: true,
-					formatter: function() {
-									return '<b>'+ Highcharts.dateFormat('%I:%M %p', this.x) +'</b><br/> '+ Highcharts.numberFormat(this.y,1) +' %';
-			      }
-                },
+                  crosshairs: true,
+			      formatter: function() {
+                            var s = '<b>'+ Highcharts.dateFormat('%I:%M %p', this.x) +'</b><br />';
+                            $.each(this.points, function(i, point) {
+                                s += '<br/>' + point.series.name + ': ' + point.y +'%';
+                            });
+			                return s;
+			      },
+                  shared: true
+			   },
 				
 				plotOptions: {
 			      line: {
@@ -320,6 +346,88 @@
                     name: 'Humidity',
 					color: '#CC3232',
 					data: humiditySeries
+                }]
+				
+				
+            });
+			
+			var windSpeedSeries = <?php echo($windSpeedData) ?>
+			
+			$('#weeklyWindSpeedChart').highcharts({
+                
+				chart: {
+			      renderTo: 'container',
+			      defaultSeriesType: 'line',
+				  zoomType: 'x'
+			   },
+			   
+				title: {
+                    text: 'Weekly Wind Speed',
+                    x: -20 //center
+                },
+                subtitle: {
+			      text: 'Click and drag in plot area to zoom in'
+			    },
+				xAxis: {
+                   	type: 'datetime',
+					minPadding: 0.02,
+					maxPadding: 0.02,
+                },
+                yAxis: {
+                    title: {
+                        text: 'Wind Speed (km/h)'
+                    },
+                    min: 0,
+					minorGridLineWidth: 0, 
+					gridLineWidth: 1,
+					alternateGridColor: null,
+					labels: { 
+					formatter: function() {
+								return Highcharts.numberFormat(this.value,0) +' km/h';
+				  }
+				  },
+                },
+                tooltip: {
+                  crosshairs: true,
+			      formatter: function() {
+                            var s = '<b>'+ Highcharts.dateFormat('%I:%M %p', this.x) +'</b><br />';
+                            $.each(this.points, function(i, point) {
+                                s += '<br/>' + point.series.name + ': ' + point.y +'km/h';
+                            });
+			                return s;
+			      },
+                  shared: true
+			   },
+				
+				plotOptions: {
+			      areaspline: {
+			         lineWidth: 1,
+			         marker: {
+			            enabled: false,
+			         states: {
+			            hover: {
+			                  enabled: true,
+			                  symbol: 'circle',
+			                  radius: 3,
+			                  lineWidth: 1
+			            }
+			         }
+			         },
+			         pointInterval: 300000, // one hour
+			      }
+			   },
+				
+                legend: {
+                    layout: 'vertical',
+                    align: 'right',
+                    verticalAlign: 'middle',
+                    borderWidth: 0
+                },
+                series: [{
+                    name: 'Wind Speed',
+					type: 'areaspline',
+					color: '#3A81B0',
+					data: windSpeedSeries
                 }]
 				
 				
@@ -415,6 +523,7 @@
 		<div id="weeklyTempChart" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
 		<div id="weeklyPressureChart" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
 		<div id="weeklyHumidityChart" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+		<div id="weeklyWindSpeedChart" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
         <div id="weeklyRainfallChart" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
 
 	</div><!-- /.container -->
