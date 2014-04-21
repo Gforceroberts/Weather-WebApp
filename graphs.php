@@ -140,8 +140,8 @@
 	   
 			Highcharts.setOptions({
 				global: {
-					//useUTC: false
-					timezoneOffset: 2
+					useUTC: false
+					//timezoneOffset: 2
 						}
 			});
 				
