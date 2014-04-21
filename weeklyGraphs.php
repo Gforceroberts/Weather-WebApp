@@ -95,7 +95,12 @@
 	
         
 		$(function () {
-
+		
+			Highcharts.setOptions({
+					global: {
+						useUTC: false
+							}
+			});
     		
 			var weeklyTempSeries = <?php echo($tempData) ?>;
 			var weeklyDewPointSeries = <?php echo($dewPointData) ?>

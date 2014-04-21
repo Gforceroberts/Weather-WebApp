@@ -95,6 +95,14 @@
 	<script type="text/javascript">
         $(function () {
 				
+			
+			Highcharts.setOptions({
+				global: {
+					useUTC: false
+						}
+			});
+			
+			
 			var temp = [ <?php echo join($data_temp, ',') ?> ]
 									
 			$('#tempGuage').highcharts({
