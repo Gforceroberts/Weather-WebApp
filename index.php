@@ -5,7 +5,7 @@
 
       <div class="starter-template">
         <h1>Force-cast Weather</h1>
-        <p class="lead">Check here for all your weather updates in and around Force's house!!</p>
+        <p class="lead"></p>
       </div>
 
       <?php
@@ -27,10 +27,10 @@
                 <th>Pressure <br />(hPa)</th>
                 <th>Humidity <br />(%)</th>
                 <th>Rain <br />(mm)</th>
-				<th>Dew Point <br />temp</th>
-				<th>Altitude <br />baro</th>
-				<th>Wind Dir</th>
-				<th>Wind Speed</th>
+				<th>DP Temp <br />(*C)</th>
+				<th>Barometric Alt <br />(m.a.s.l)</th>
+				<th>Wind <br />(Dir)</th>
+				<th>Wind Speed<br />(km/h)</th>
               </tr>
             </thead>
             <tbody>

@@ -202,7 +202,7 @@
 	    yAxis: [{
 	        
 	        min: 840,
-	        max: 860,
+	        max: 1050,
 	        tickPosition: 'outside',
 	        lineColor: '#933',
 	        lineWidth: 2,
