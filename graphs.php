@@ -4,7 +4,7 @@
 
     
 	
-	$today = date("Y-m-d", time());
+	$today = date("Y-m-d", time() + 60 * 60 * 2); //add two hours for time zone
 	
 	//Daily Temp Data
 	$SQL = "SELECT DATE_FORMAT(date, '%Y-%m-%d,%H:%i:%s') as tempdate, temp FROM `mydata` WHERE  date >= '$today'";
@@ -156,8 +156,8 @@
 			   },
 			   xAxis: {
 			      type: 'datetime',
-				//minPadding: 0.02,
-				//maxPadding: 0.02,
+				minPadding: 0.02,
+				maxPadding: 0.02,
 			   },
 			   yAxis: {
 			      title: {
