@@ -11,7 +11,8 @@
   	while ($row = mysql_fetch_array($currentTemp)) {
 
 	   $data_temp[] = $row['temp'];
-	   
+	   $last_date = $row['date'];
+
 	}
 
 	//latest pressure data
@@ -20,18 +21,18 @@
   	while ($row = mysql_fetch_array($currentPressure)) {
 
 	   $data_pressure[] = $row['pressure'];
-	   
+
 	}
-	
+
 	//latest humidity data
 	$SQL = "select date, humidity from mydata order by id desc limit 1";
   	$currentHumidity = mysql_query($SQL);
   	while ($row = mysql_fetch_array($currentHumidity)) {
 
 	   $data_humidity[] = $row['humidity'];
-	   
+
 	}
-	
+
 	//latest wind directio data
 	$SQL = "select date, winddir from mydata order by id desc limit 1";
   	$currentWindDir = mysql_query($SQL);
@@ -65,8 +66,10 @@
 			default:
 			$winddir = 0;
 			break;
-		}		
-	   $data_winddir = [($winddir)];
+		}
+		$data_winddir = array();
+		array_push($data_winddir, $winddir);
+	   //$data_winddir = [($winddir)];
 	   //echo(json_encode($data_winddir, JSON_NUMERIC_CHECK));
 	}
 	//latest pressure data
@@ -77,8 +80,8 @@
 	   $data_windspeed[] = $row['windspeed'];
 	   //echo(json_encode($data_windspeed, JSON_NUMERIC_CHECK));
 	}
-	
-	
+
+
 	//today's rainfall
 	$SQL = "select date as day, sum(rain) as dailyrain from mydata WHERE  `date` >= '$yesterday' AND `date` <= '$today' group by day(date)";
   	$dailyRainfall = mysql_query($SQL);
@@ -86,27 +89,27 @@
 
 	   $data_RainCats[] = $row['day'];
 	   $data_dailyRainfall[] = $row['dailyrain'];
-	   
+
 	}
-	
-	
+
+
 ?>
 
 	<script type="text/javascript">
         $(function () {
-				
-			
+
+
 			Highcharts.setOptions({
 				global: {
 					useUTC: false
 						}
 			});
-			
-			
+
+
 			var temp = [ <?php echo join($data_temp, ',') ?> ]
-									
+
 			$('#tempGuage').highcharts({
-	
+
 			chart: {
 	        type: 'gauge',
 	        alignTicks: false,
@@ -115,18 +118,21 @@
 	        plotBorderWidth: 0,
 	        plotShadow: false
 	    },
-	
+
 	    title: {
 	        text: 'Current Temperature'
 	    },
-	    
+
 	    pane: {
 	        startAngle: -150,
 	        endAngle: 150
-	    },	        
-	
+	    },
+	    credits: {
+			enabled: false
+		},
+
 	    yAxis: [{
-	        
+
 	        min: -10,
 	        max: 50,
 	        tickPosition: 'outside',
@@ -144,14 +150,14 @@
 	        offset: -20,
 	        endOnTick: false
 	    }],
-	
+
 	    series: [{
 	        name: 'Temp',
 	        data: temp,
 	        dataLabels: {
 	            formatter: function () {
 	                var tempLabel = temp;
-	                return '<span style="color:#339">'+ tempLabel + ' °C</span>'; 
+	                return '<span style="color:#339">'+ tempLabel + ' °C</span>';
 	            },
 	            backgroundColor: {
 	                linearGradient: {
@@ -170,17 +176,17 @@
 	            valueSuffix: ' °C'
 	        }
 	    }]
-	
+
 	},
 	// Add some life
 	function(chart) {
-	    	
+
 	});
-	
-			var pressure = [ <?php echo join($data_pressure, ',') ?> ]	
-							
+
+			var pressure = [ <?php echo join($data_pressure, ',') ?> ]
+
 			$('#pressureGuage').highcharts({
-	
+
 			chart: {
 	        type: 'gauge',
 	        alignTicks: false,
@@ -189,18 +195,21 @@
 	        plotBorderWidth: 0,
 	        plotShadow: false
 	    },
-	
+
 	    title: {
 	        text: 'Current Pressure'
 	    },
-	    
+
 	    pane: {
 	        startAngle: -150,
 	        endAngle: 150
-	    },	        
-	
+	    },
+	    credits: {
+			enabled: false
+		},
+
 	    yAxis: [{
-	        
+
 	        min: 840,
 	        max: 1050,
 	        tickPosition: 'outside',
@@ -218,14 +227,14 @@
 	        offset: -20,
 	        endOnTick: false
 	    }],
-	
+
 	    series: [{
 	        name: 'Pressure',
 	        data: pressure,
 	        dataLabels: {
 	            formatter: function () {
 	                var pressLabel = pressure;
-	                return '<span style="color:#339">'+ pressLabel + ' hPa</span>'; 
+	                return '<span style="color:#339">'+ pressLabel + ' hPa</span>';
 	            },
 	            backgroundColor: {
 	                linearGradient: {
@@ -244,17 +253,17 @@
 	            valueSuffix: ' hPa'
 	        }
 	    }]
-	
+
 	},
 	// Add some life
 	function(chart) {
-	    	
+
 	});
-	
-			var humidity = [ <?php echo join($data_humidity, ',') ?> ]	
-							
+
+			var humidity = [ <?php echo join($data_humidity, ',') ?> ]
+
 			$('#humidityGuage').highcharts({
-	
+
 			chart: {
 	        type: 'gauge',
 	        alignTicks: false,
@@ -263,18 +272,20 @@
 	        plotBorderWidth: 0,
 	        plotShadow: false
 	    },
-	
+
 	    title: {
 	        text: 'Current Humidity'
 	    },
-	    
+
 	    pane: {
 	        startAngle: -150,
 	        endAngle: 150
-	    },	        
-	
+	    },
+	    credits: {
+			enabled: false
+		},
 	    yAxis: [{
-	        
+
 	        min: 0,
 	        max: 105,
 	        tickPosition: 'outside',
@@ -292,14 +303,14 @@
 	        offset: -20,
 	        endOnTick: false
 	    }],
-	
+
 	    series: [{
 	        name: 'Humidity',
 	        data: humidity,
 	        dataLabels: {
 	            formatter: function () {
 	                var humLabel = humidity;
-	                return '<span style="color:#339">'+ humLabel + ' %</span>'; 
+	                return '<span style="color:#339">'+ humLabel + ' %</span>';
 	            },
 	            backgroundColor: {
 	                linearGradient: {
@@ -318,17 +329,17 @@
 	            valueSuffix: ' %'
 	        }
 	    }]
-	
+
 	},
-	
+
 	function(chart) {
-	    	
+
 	});
-	
-			var winddirection = [ <?php echo join($data_winddir, ',') ?> ]	
-							
+
+			var winddirection = [ <?php echo join($data_winddir, ',') ?> ]
+
 			$('#windDirGuage').highcharts({
-	
+
 			chart: {
 	        type: 'gauge',
 	        alignTicks: false,
@@ -337,18 +348,21 @@
 	        plotBorderWidth: 0,
 	        plotShadow: false
 	    },
-	
+
 	    title: {
 	        text: 'Current Wind Direction'
 	    },
-	    
+
 	    pane: {
 	        startAngle: 0,
 	        endAngle: 360
-	    },	        
-	
+	    },
+	    credits: {
+			enabled: false
+		},
+
 	    yAxis: [{
-	        
+
 	        min: 0,
 	        max: 360,
 	        tickPosition: 'outside',
@@ -382,7 +396,7 @@
 	        offset: -20,
 	        endOnTick: false
 	    }],
-	
+
 	    series: [{
 	        name: 'Wind Direction',
 	        data: winddirection,
@@ -397,7 +411,7 @@
                     else if(windDirLabel == 225) { return 'SW'; }
                     else if(windDirLabel == 270) { return 'W'; }
                     else if(windDirLabel == 315) { return 'NW'; }
-					return '<span style="color:#339">'+ windDirLabel + '</span>'; 
+					return '<span style="color:#339">'+ windDirLabel + '</span>';
 	            },
 	            backgroundColor: {
 	                linearGradient: {
@@ -416,17 +430,17 @@
 	            valueSuffix: ' %'
 	        }
 	    }]
-	
+
 	},
-	
+
 	function(chart) {
-	    	
+
 	});
-	
-			var wind = [ <?php echo join($data_windspeed, ',') ?> ]	
-							
+
+			var wind = [ <?php echo join($data_windspeed, ',') ?> ]
+
 			$('#windSpeedGuage').highcharts({
-	
+
 			chart: {
 	        type: 'gauge',
 	        alignTicks: false,
@@ -435,18 +449,21 @@
 	        plotBorderWidth: 0,
 	        plotShadow: false
 	    },
-	
+
 	    title: {
 	        text: 'Current Wind Speed'
 	    },
-	    
+
 	    pane: {
 	        startAngle: -150,
 	        endAngle: 150
-	    },	        
-	
+	    },
+	    credits: {
+			enabled: false
+		},
+
 	    yAxis: [{
-	        
+
 	        min: 0,
 	        max: 50,
 	        tickPosition: 'outside',
@@ -464,14 +481,14 @@
 	        offset: -20,
 	        endOnTick: false
 	    }],
-	
+
 	    series: [{
 	        name: 'Wind Speed',
 	        data: wind,
 	        dataLabels: {
 	            formatter: function () {
 	                var windSpeedLabel = wind;
-	                return '<span style="color:#339">'+ windSpeedLabel + ' km/h</span>'; 
+	                return '<span style="color:#339">'+ windSpeedLabel + ' km/h</span>';
 	            },
 	            backgroundColor: {
 	                linearGradient: {
@@ -490,18 +507,18 @@
 	            valueSuffix: ' km/h'
 	        }
 	    }]
-	
+
 	},
-	
-	
+
+
 	function(chart) {
-	    	
+
 	});
-	
+
 			//var rainCat = [ <?php echo join($data_RainCats, ',') ?> ]
 			var rainData = [ <?php echo join($data_dailyRainfall, ',') ?> ]
-		
-		
+
+
 			$('#rainfall').highcharts({
 				chart: {
 					type: 'column'
@@ -509,7 +526,7 @@
 				title: {
 					text: 'Daily Rainfall'
 				},
-				
+
 				xAxis: {
 					categories: ["Today"]
 				},
@@ -533,16 +550,19 @@
 						borderWidth: 0
 					}
 				},
+				credits: {
+				      enabled: false
+				  },
 				series: [{
 					name: 'Today\'s Rainfall',
 					data: rainData
-		
-			
+
+
 				}]
 			});
-	
-	
-	
+
+
+
 });
 
 
@@ -551,13 +571,31 @@
   <?php include('nav.php'); ?>
 
     <div class="container">
-		
-    	<div id="tempGuage" style="min-width: 310px; max-width: 400px; height: 300px; margin: 0 auto; float: left"></div>
-		<div id="pressureGuage" style="min-width: 310px; max-width: 400px; height: 300px; margin: 0 auto; float: left"></div>
-        <div id="humidityGuage" style="min-width: 310px; max-width: 400px; height: 300px; margin: 0 auto; float: left"></div>
-		<div id="windDirGuage" style="min-width: 310px; max-width: 400px; height: 300px; margin: 0 auto; float: left"></div>
-		<div id="windSpeedGuage" style="min-width: 310px; max-width: 400px; height: 300px; margin: 0 auto; float: left"></div>
-		<div id="rainfall" style="min-width: 310px; max-width: 400px; height: 400px; margin: 0 auto; float: left"></div>
-				
+    	<div class="row">
+			<!--<p class="bg-primary">Last Updated: <?php // echo date("l jS \of F Y h:i:s A", strtotime($last_date)); ?></p>-->
+			<h4>Last Updated: <?php echo get_time_ago(strtotime($last_date)); ?></h4>
+    	</div>
+
+    	<div class="row">
+    		<div class="col-sm-4 col-xs-6">
+    			<div id="tempGuage"></div>
+    		</div>
+    		<div class="col-sm-4 col-xs-6">
+    			<div id="pressureGuage"></div>
+    		</div>
+    		<div class="col-sm-4 col-xs-6">
+    			<div id="humidityGuage"></div>
+    		</div>
+    		<div class="col-sm-4 col-xs-6">
+    			<div id="windDirGuage"></div>
+    		</div>
+    		<div class="col-sm-4 col-xs-6">
+    			<div id="windSpeedGuage"></div>
+    		</div>
+    		<div class="col-sm-4 col-xs-6">
+    			<div id="rainfall"></div>
+    		</div>
+    	</div>
+
 	</div><!-- /.container -->
 <?php include('footer.php'); ?>
